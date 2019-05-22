@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">登录</h1>
+		</header>
+		<div class="mui-content">
+			<label>policy:</label>
+			<select id="idpolicy">
+				<option>please select</option>
+			</select>
+			<label>category:</label>
+			<select id="idcategory">
+				<option>please select</option>
+			</select>
+			<ul id="idresult">
+			</ul>
+			<button id='login' class="mui-btn mui-btn-block mui-btn-primary">登录</button>
+			<button id='refresh' class="mui-btn mui-btn-block mui-btn-primary">刷新</button>
+		</div>
+	</body>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript">
+		var tempList = [{
+			"policy": "0001",
+			"category": "aaaa",
+			"name":"apple"
+		}, {
+			"policy": "0001",
+			"category": "bbbb",
+			"name":"orange"
+		}, {
+			"policy": "0001",
+			"category": "cccc",
+			"name":"banana"
+		}, {
+			"policy": "0002",
+			"category": "cccc",
+			"name":"watermelon"
+		}, {
+			"policy": "0003",
+			"category": "cccc",
+			"name":"grape"
+		}, {
+			"policy": "0004",
+			"category": "eeee",
+			"name":"pineapple"
+		}, {
+			"policy": "0004",
+			"category": "dddd",
+			"name":"buleberry"
+		}, {
+			"policy": "0005",
+			"category": "pppp",
+			"name":"stawberry"
+		}, {
+			"policy": "0005",
+			"category": "aaaa",
+			"name":"pear"
+		}]
+
+		var polObj = tempList;
+
+		$(function() {
+			//init Policy DropDown
+			var initPolicyDropDown = function() {
+				var newList = [];
+				for(var i = 0; i < tempList.length; i++) {
+					var arrOne = tempList[i].policy;
+					var count = 0;
+					for(var j = i + 1; j < tempList.length; j++) {
+						var arrTwo = tempList[j].policy;
+						if(arrOne === arrTwo) {
+							count++;
+						}
+					}
+					if(count === 0) {
+						newList.push(arrOne);
+					}
+				}
+				console.log("the new list is---" + newList)
+				var html_ = ''
+				for(var k = 0; k < newList.length; k++) {
+					html_ += '<option value=' + newList[k] + '>' + newList[k] + '</option>';
+				}
+				$('#idpolicy').append(html_);
+			}
+			initPolicyDropDown();
+
+			//find Category
+			var findCategory = function(arr, polNo) {
+				var categoryList = []
+				for(var i = 0; i < arr.length; i++) {
+					if(arr[i].policy == polNo) {
+						categoryList.push(arr[i].category);
+					}
+				}
+				return categoryList;
+			}
+
+			console.log(findCategory(polObj, '0001'));
+
+			//search result
+			var searchResult = function(arr, polNo, ctgNo) {
+				var resultList = []
+				for(var i = 0; i < arr.length; i++) {
+					if(arr[i].policy == polNo && arr[i].category == ctgNo) {
+						resultList.push(arr[i]);
+					}
+				}
+				return resultList;
+			}
+			console.log(searchResult(polObj, '0001', 'aaaa'));
+
+			//policy change even
+			$('#idpolicy').change(function() {
+				var categoryResult = [];
+				var selectedPol = $(this).children('option:selected').val();
+				categoryResult = findCategory(polObj, selectedPol);
+				var html_ = '<option>please select</option>';
+				for(var i = 0; i < categoryResult.length; i++) {
+					html_ += '<option value=' + categoryResult[i] + '>' + categoryResult[i] + '</option>';
+				}
+				$('#idcategory').html(html_);
+				$('#idcategory').change(function() {
+					$('#idresult').children().html('');
+					var selectedCty = $('#idcategory').children('option:selected').val();
+					var detailResult = searchResult(polObj, selectedPol, selectedCty);
+					var htmlDetails_ = ''
+					for(var j = 0; j < detailResult.length; j++) {
+						htmlDetails_ += '<li>' + detailResult[j].policy + '</li>' +
+							'<li>' + detailResult[j].category + '</li>'+
+							'<li>' + detailResult[j].name + '</li>'
+					}
+					$('#idresult').html(htmlDetails_);
+				})
+
+			})
+
+		})
+	</script>
+
+</html>
